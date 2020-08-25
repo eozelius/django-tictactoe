@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Game - {{ game.id }}
+{% endblock %}
+
+{% block content %}
+  <h1>Game: {{ game.first_player }} vs. {{ game.second_player }}</h1>
+
+  <div class="status-container">
+    {% if game.status == 'F' %}
+      <h4>{{ game.first_player }}'s move</h4>
+    {% elif game.status == 'S' %}
+      <h4>{{ game.second_player }}'s move</h4>
+    {% elif game.status == 'W' %}
+      <h4>{{ game.first_player }} wins!</h4>
+    {% elif game.status == 'L' %}
+      <h4>{{ game.second_player }} wins!</h4>
+    {% elif game.status == 'D' %}
+      <h4>Draw :|</h4>
+    {% endif %}
+
+  </div>
+
+  <div class="game-detail-container">
+    <table>
+      {% for row in game.board %}
+        <tr data-row="{{ forloop.counter0 }}">
+          {% for move in row %}
+            <td data-col="{{ forloop.counter0 }}">
+              {% if move %}
+                {% if move.by_first_player %}
+                  X
+                {% else %}
+                  O
+                {% endif %}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+
+    {% if game.status == 'F' or game.status == 'S' %}
+
+      <form id="game_detail_form" method="POST" action="{% url 'gameplay_make_move' id=game.id %}">
+        {% csrf_token %}
+
+        <input class="game-detail__row" type="hidden" name="row" />
+        <input class="game-detail__col" type="hidden" name="col" />
+        <input class="game-detail__by-first-player" type="hidden" name="by_first_player" value="{{ by_first_player }}" />
+      </form>
+    {% endif %}
+  </div>
+{% endblock content %}
+

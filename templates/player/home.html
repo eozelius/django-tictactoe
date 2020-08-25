@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ user.username }}
+{% endblock %}
+
+{% block content %}
+  <h2>welcome {{ user.username }} </h2>
+
+  <div class="player-home-container">
+    <div class="games-container">
+      <h2>Active Games</h2>
+
+      <!-- My Turn -->
+      <div class="active-games-container">
+        <h3>My Turn</h3>      
+        {% for g in sorted_games.my_turn %}
+          <ul>
+            <li>
+              <p>
+                <a href="{{ g.get_absolute_url }}">
+                  {{ g.id }} => {{ g.first_player }} vs. {{ g.second_player }}
+                </a>
+              </p>
+            </li>
+          </ul>
+        {% endfor %}
+      </div>
+
+      <!-- Waiting for Opponent -->
+      <div class="waiting-games-container">
+        <h3>waiting for opponent</h3>
+        <ul>
+          {% for g in sorted_games.not_my_turn %}
+            <li><p>Game: {{ g.id }} => {{ g.first_player }} vs. {{ g.second_player }} </p></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Finished Games -->
+      <div class="finished-games-container">
+        <h3>Archived Games</h3>
+
+        <ul>        
+          {% for g in finished_games %}
+            {% if g.status not in 'FS' %}            
+              <li>
+                <p>
+                  {% if g.status == 'W' and user == g.first_player %}
+                    WON 
+                  {% elif g.status == 'S' and user == g.second_player %}
+                    WON
+                  {% elif g.status == 'D' %}
+                    DRAW
+                  {% else %}
+                    LOST
+                  {% endif %}
+
+                  {{ g.id }} => {{ g.first_player }} vs. {{ g.second_player }}
+                </p>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="invites-container">
+      <div>
+        <a href="{% url 'player_new_invitation' %}">Send an invite</a>
+      </div>
+
+      <div class="my-pending-invites">
+        <h2>My Pending invites</h2>
+
+        {% for invite in invites_to_me %}
+          <a href="{% url 'player_accept_invitation' id=invite.id %}">
+            <div class="invite">
+              <p>From: {{ invite.from_user }}</p>
+              <p>Message: {{ invite.message }}</p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+      <div>
+        <h2>My Sent invites</h2>
+          {% for invite in sent_invites %}
+            <div>
+              <p>To: {{ invite.to_user }} - Message: {{ invite.message }}</p>
+            </div>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}

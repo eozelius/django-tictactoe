@@ -1,0 +1,51 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+  width: 98%;
+  background-color: rgb(49, 47, 47);
+  color: #fff;
+  height: 60px;
+
+  font-size: 25px;
+  padding: 1%
+}
+
+header a {
+  color: #fff !important;
+  font-family: 'Arial';
+  text-decoration: none;
+  line-height: 60px;
+}
+
+main {
+  display: block;
+  margin: 5% auto;
+  width: 90%;
+}
+
+.player-home-container h2 {
+  text-align: center;
+}
+
+.game-detail-container td {
+  width: 100px;
+  height: 100px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 50px;
+}
+
+.player-home-container {
+  display: flex;
+}
+
+.games-container,
+.invites-container {
+  padding: 3%;
+  width: 40%;
+  margin: 5%;
+  /* display: inline-block; */
+  border: 1px solid #ccc;
+}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+accept invite
+{% endblock %}
+
+{% block content %}
+  <div class="accept-invitation">
+    <p>{{ invitation.from_user }} wants to play a game.</p>
+
+    <form method="POST" action="{% url 'player_accept_invitation' id=invitation.id %}">
+      {% csrf_token %}
+
+      <button type="submit" name="accept" value="accept">Accept</button>
+      <button type="submit" name="accept" value="reject">Reject</button>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,78 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.views.generic import CreateView
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from gameplay.models import Game
+from player.models import Invitation
+from player.forms import InvitationForm
+
+@login_required
+def home(request):  
+  my_games = Game.objects.games_for_user(request.user)
+  active_games = my_games.active()  
+  finished_games = my_games.difference(active_games)
+  my_turn_games = Game.objects.players_turn_games(request.user)
+  sorted_games = Game.objects.sorted_games_for_player(request.user)
+  invites_to_me = Invitation.objects.filter(to_user = request.user)
+  sent_invites = Invitation.objects.filter(from_user = request.user)
+
+  return render(request, 'player/home.html', {
+    # 'my_games': my_games,
+    # 'active_games': active_games,
+    # 'my_turn_games': my_turn_games,
+    'finished_games': finished_games,
+    'sorted_games': sorted_games,
+    'invites_to_me': invites_to_me,
+    'sent_invites': sent_invites
+  })
+
+@login_required
+def new_invitation(request):
+  if request.method == 'POST':
+    invitation = Invitation(from_user=request.user)
+    form = InvitationForm(instance=invitation, data=request.POST)
+
+    if form.is_valid():
+      form.save()
+      return redirect('player_home')
+  else: 
+    return render(
+      request,
+      'player/new_invitation_form.html',
+      { 'form': InvitationForm() }
+    )
+
+@login_required
+def accept_invitation(request, id):
+  invitation = get_object_or_404(Invitation, pk=id)
+  
+  if not request.user == invitation.to_user:
+    raise PermissionDenied
+  
+  if request.method == 'POST':
+    if 'accept' in request.POST:
+      game = Game.objects.create(
+        first_player = invitation.to_user,
+        second_player = invitation.from_user
+      )
+      invitation.delete()
+      return redirect(game)
+    else:
+      return render(
+        request,
+        'player/accept_invitation_form.html',
+        { 'invitation': invitation }
+      )
+  else:
+    return render(
+      request,
+      'player/accept_invitation_form.html',
+      { 'invitation': invitation }
+    )
+
+class SignUpView(CreateView):
+  form_class = UserCreationForm
+  template_name = 'player/signup_form.html'
+  success_url = reverse_lazy('player_home')

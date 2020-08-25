@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+welcome
+{% endblock %}
+
+{% block content %}
+  <div class="tictactoe-welcome-container">
+    <h2>Django Fundaments Pluralsite Course</h2>
+
+    <h3>Let's play some tictactoe</h3>
+
+    {% if user.is_authenticated %}
+      <a href="{% url 'player_home' %}">
+        <p>Player home
+        </p>
+      </a>
+    {% else %}
+      <p>
+        <a href="{% url 'player_login' %}">Sign in</a> to start a game
+      </p>
+    {% endif %}
+  </div>
+{% endblock %}
